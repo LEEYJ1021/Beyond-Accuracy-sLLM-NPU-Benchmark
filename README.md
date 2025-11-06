@@ -20,8 +20,6 @@ The repository is organized to separate data, source code, and results.
 │   ├── Data_정제.xlsx           # Main aggregated data for analysis
 │   ├── Data_허깅페이스.xlsx       # Hugging Face metadata for models
 │   └── Data_시계열.xlsx         # Raw time-series latency data from benchmarks
-├── results/
-│   └── (Generated plots and tables will be saved here)
 ├── src/
 │   ├── 1_compile_models.py      # Script to compile Hugging Face models for the NPU
 │   ├── 2_benchmark_inference.py # Script to run inference benchmarks and gather metrics
