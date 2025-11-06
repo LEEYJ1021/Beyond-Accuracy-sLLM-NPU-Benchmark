@@ -1,0 +1,18 @@
+pandas
+numpy
+matplotlib
+seaborn
+scipy
+statsmodels
+scikit-learn
+xgboost
+torch
+transformers
+# Note: optimum[rbln] requires the Rebellions SDK.
+# Please follow official installation instructions.
+optimum[rbln]
+datasets
+psutil
+rouge-score
+patsy
+openpyxl
