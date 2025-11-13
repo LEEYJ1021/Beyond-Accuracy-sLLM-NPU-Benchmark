@@ -1,12 +1,12 @@
-# Beyond Accuracy: A Multi-Dimensional Benchmarking of sLLMs on a Specialized NPU
+# Enhancing Software Dependability: A Reliability-Centric Benchmarking Framework for Small Language Models on Specialized NPUs in Edge AI Applications
 
 This repository contains the official source code and analysis scripts for the research paper, **"Beyond Accuracy: A Multi-Dimensional Benchmarking of Small-to-Medium Language Models on a Specialized NPU Reveals Critical Speed-Stability Trade-offs."**
 
 ## Abstract
 
-This study establishes a comprehensive benchmarking framework to evaluate small-to-medium Language Models (sLLMs) on a specialized Neural Processing Unit (NPU), moving beyond conventional accuracy metrics. By testing nine sLLMs on the Rebellions ATOM™ NPU across 300 independent trials per model-task combination, we empirically validated five core hypotheses. Our analysis confirmed a statistically significant interaction between model size and task complexity on inference latency (F(2, 2683) = 41.55, p < .001, partial η² = 0.030). We also revealed a strongly non-linear relationship between context length and latency, where a natural cubic spline model achieved 58.1% greater explanatory power (ΔR²) over a linear model. A Random Forest analysis identified peak NPU memory utilization as the dominant driver of token throughput (Permutation Importance = 0.458), underscoring the criticality of memory optimization. We demonstrated significant heterogeneity in latency variance across tasks (Levene's W = 5.82, p = .003), with NLU tasks exhibiting the highest instability. Distributional analysis confirmed non-normal latency profiles with heavy tails, leading to a novel Optimization Priority Score for guiding deployment. These results expose a critical trade-off between speed and stability, providing a data-driven foundation for effective model selection on specialized hardware.
+This research introduces a comprehensive benchmarking framework to evaluate the software dependability of small language models (sLLMs) deployed on specialized NPUs for Edge AI applications. Moving beyond mere accuracy, the study rigorously analyzes the trade-offs between computational efficiency and operational reliability. Key findings reveal that NPU memory usage is the dominant predictor of system reliability, and that performance degradation follows strongly non-linear patterns. The work also uncovers significant heterogeneity in performance variance and non-normal latency profiles, providing data-driven methodologies and practical solutions for the design of dependable, mission-critical AI systems.
 
-**Keywords**: On-Device AI; Small Language Models (sLLMs); Neural Processing Unit (NPU) Benchmarking; Inference Latency Distribution; Performance Stability; Pareto Efficiency
+**Keywords**: Software Dependability, Edge AI Reliability, NPU Benchmarking, Mission-Critical Systems, Performance Stability, AI Safety.
 
 ---
 
