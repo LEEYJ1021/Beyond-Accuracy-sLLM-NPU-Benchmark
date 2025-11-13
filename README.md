@@ -1,9 +1,5 @@
 # Enhancing Software Dependability: A Reliability-Centric Benchmarking Framework for Small Language Models on Specialized NPUs in Edge AI Applications
 
-This repository contains the official source code and analysis scripts for the research paper, **"Beyond Accuracy: A Multi-Dimensional Benchmarking of Small-to-Medium Language Models on a Specialized NPU Reveals Critical Speed-Stability Trade-offs."**
-
-## Abstract
-
 This research introduces a comprehensive benchmarking framework to evaluate the software dependability of small language models (sLLMs) deployed on specialized NPUs for Edge AI applications. Moving beyond mere accuracy, the study rigorously analyzes the trade-offs between computational efficiency and operational reliability. Key findings reveal that NPU memory usage is the dominant predictor of system reliability, and that performance degradation follows strongly non-linear patterns. The work also uncovers significant heterogeneity in performance variance and non-normal latency profiles, providing data-driven methodologies and practical solutions for the design of dependable, mission-critical AI systems.
 
 **Keywords**: Software Dependability, Edge AI Reliability, NPU Benchmarking, Mission-Critical Systems, Performance Stability, AI Safety.
