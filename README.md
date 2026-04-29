@@ -289,11 +289,3 @@ Model weights used in this study are subject to their respective licenses:
 | DeepSeek | DeepSeek Community License |
 | OPT | OPT License (Meta/Fairseq) |
 | Midm | Apache 2.0 |
-
----
-
-## Data Availability
-
-All raw benchmark logs, analysis scripts, and environment configurations used in this study are publicly available at:
-
-**https://github.com/LEEYJ1021/Beyond-Accuracy-sLLM-NPU-Benchmark**
