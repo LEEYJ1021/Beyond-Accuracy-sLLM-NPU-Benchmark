@@ -1,38 +1,34 @@
-# Distribution-Aware Timing Characterization of Small Language Model Inference on Embedded NPUs: Implications for Real-Time Deployment
+# Hardware-Aware Execution-Time Characterization of Small Language Model Inference on Embedded NPUs: Timing Distributions and Schedulability Implications
 
-This repository provides the full experimental pipeline and analysis code for the paper:
+This study empirically evaluates nine small language models (sLLMs; 0.5B–3.2B parameters) on the Rebellions ATOM™ NPU—a 15W edge accelerator—using 300 independent inference trials per model–task combination. The central argument is that execution-time characterization for real-time embedded AI must go beyond mean-latency metrics: auto-regressive LLM inference produces non-normal, heavy-tailed timing distributions that cause conventional single-point benchmarks to systematically underestimate deadline-miss risk. The framework quantifies **execution-time variability**, **tail-latency risk**, and **hardware-resource interactions** to support timing-aware model selection in resource-constrained industrial NPU deployments.
 
-> **Distribution-Aware Timing Characterization of Small Language Model Inference on Embedded NPUs: Implications for Real-Time Deployment**
-
-The study presents an empirical evaluation of nine sLLMs (0.5B–3.2B parameters) on the Rebellions ATOM™ NPU, using 300 independent inference trials per model–task combination. The central methodological argument is that execution-time characterization for real-time embedded AI must go beyond mean-latency metrics: because auto-regressive LLM inference produces non-normal, heavy-tailed timing distributions, conventional single-point benchmarks systematically underestimate deadline-miss risk. The framework addresses this gap by quantifying **execution-time variability**, **tail-latency risk**, and **hardware-resource interactions**, thereby supporting timing-aware model selection in resource-constrained industrial deployments.
-
-**Keywords**: Real-Time Inference; Timing Predictability; NPU Performance Analysis; Latency Distribution; Schedulability; Embedded Edge AI.
+**Keywords**: Embedded NPU; Execution-time characterization; Latency distribution; Real-time schedulability; Memory footprint
 
 ---
 
 ## Key Findings
 
-- **H1 (Task-Contingent Execution Time Scaling):** A statistically significant interaction effect between model parameter count and task type on inference latency was confirmed (F(2, 2683) = 41.55, p < .001, η²p = 0.030). Summarization latency scales approximately 2.7× more steeply than NLU across the tested parameter range (0.5B–3.2B), demonstrating that single-task benchmarks systematically under-provision generative workloads in multi-task deployments.
+- **H1 (Task-Contingent Execution-Time Scaling):** A statistically significant interaction between model parameter count and task type was confirmed (F(2, 2683) = 41.55, p < .001, η²p = 0.030). Summarization latency scales approximately 2.7× more steeply than NLU across the 0.5B–3.2B parameter range, demonstrating that single-task benchmarks systematically under-provision generative workloads in multi-task NPU deployments.
 
-- **H2 (Non-Linear Execution Time Scaling Under Variable Context Conditions):** A natural cubic spline model (df=4) outperformed the linear baseline (ΔAIC = 8.49; LOOCV ΔR² = 48.3%), confirming that linear latency extrapolation underestimates worst-case execution time at non-standard context-length configurations on the ATOM™ NPU. The LOOCV-adjusted figure (LOOCV R² = 0.743 vs. linear LOOCV R² = 0.501) is reported as the conservative estimate; results should be interpreted as directional evidence of non-linearity given the small sample size (n = 9 model-aggregate data points).
+- **H2 (Non-Linear Context-Length Scaling):** A natural cubic spline model (df = 4) outperformed the linear baseline (ΔAIC = 8.49; LOOCV ΔR² = 48.3%), confirming that linear latency extrapolation underestimates worst-case execution time at non-standard context-length configurations on the ATOM™ NPU. The LOOCV-adjusted estimate (R² = 0.743 vs. linear R² = 0.501) is reported as the conservative figure; results should be interpreted as directional evidence of non-linearity given the small sample size (n = 9 model-aggregate data points).
 
-- **H3 (Task-Specific Execution Time Variance Heterogeneity):** Levene's test confirmed significant heterogeneity in execution-time variance across NLU, QA, and Summarization tasks (W = 5.82, p = .003, Cohen's f = 1.58). Counter-intuitively, NLU exhibited the highest timing instability (CV = 1.203) despite the lowest mean latency, implying that uniform SLA thresholds are empirically unwarranted for multi-task NPU deployments; task-specific timing budgets are required.
+- **H3 (Task-Specific Execution-Time Variance Heterogeneity):** Levene's test confirmed significant heterogeneity in execution-time variance across NLU, QA, and Summarization tasks (W = 5.82, p = .003, Cohen's f = 1.58). Counter-intuitively, NLU exhibited the highest timing instability (CV = 1.203) despite the lowest mean latency, indicating that uniform SLA thresholds are empirically unwarranted and that task-specific timing budgets are required for multi-task NPU deployments.
 
-- **H4 (Memory Utilization as Dominant Throughput Predictor):** Random Forest permutation importance analysis identified peak NPU memory utilization as the strongest predictive feature for token throughput (Importance = 0.458), outperforming model parameter count (0.353). These findings reflect predictive associations, not established causal mechanisms. Practically, they direct practitioners toward memory footprint reduction strategies — including quantization, KV cache management, and grouped-query attention — as a higher-priority intervention than parameter pruning alone under fixed hardware constraints.
+- **H4 (Peak NPU Memory as Dominant Throughput Predictor):** Random Forest permutation importance analysis identified peak NPU memory utilization as the strongest predictive feature for token throughput (importance = 0.458), outperforming model parameter count (0.353). These findings reflect predictive associations rather than established causal mechanisms. Practically, they direct practitioners toward memory footprint reduction strategies—including quantization, KV cache management, and grouped-query attention—as a higher-priority hardware optimization lever than parameter pruning under fixed resource constraints.
 
-- **H5 (Distributional Deviations and Tail-Latency Risk):** All latency distributions were significantly non-normal (Shapiro-Wilk, all p < .001), exhibiting positive skewness and heavy tails. The **Optimization Priority Score (OPS)** composite index synthesizes CV, Tail Ratio (P95/P50), Skewness, and Kurtosis into a single deployment-risk ranking, making deadline-miss risk explicitly visible during model selection prior to production deployment.
+- **H5 (Distributional Deviations and Tail-Latency Risk):** All latency distributions were significantly non-normal (Shapiro-Wilk, all p < .001), exhibiting positive skewness and heavy tails. The **Optimization Priority Score (OPS)** synthesizes CV, Tail Ratio (P95/P50), Skewness, and Kurtosis into a single deployment-risk index, making deadline-miss risk explicitly visible during model selection prior to NPU deployment.
 
 ---
 
 ## Optimization Priority Score (OPS)
 
-The OPS is the primary methodological contribution of this study. It provides a composite, reproducible index for ranking models by their aggregate latency instability and associated deadline-miss risk:
+The OPS is the primary methodological contribution of this study. It provides a composite, reproducible index for ranking models by aggregate latency instability and associated deadline-miss risk:
 
 ```
 OPSᵢ = 0.35·CV*ᵢ + 0.35·TailRatio*ᵢ + 0.15·|Skew*ᵢ| + 0.15·Kurt*ᵢ
 ```
 
-Where each metric is min-max normalized across the nine evaluated models (range: 0 to 1). A **higher OPS indicates greater timing instability and higher deadline-miss risk**, signalling that the model requires stability-focused optimization (e.g., quantization calibration, inference engine tuning, context length capping) before production deployment.
+Each metric is min-max normalized across the nine evaluated models (range: 0 to 1). A **higher OPS indicates greater timing instability and higher deadline-miss risk**, signalling that the model requires stability-focused optimization (e.g., quantization calibration, inference engine tuning, context length capping) before production deployment.
 
 | Model | Mean (ms) | CV | P95/P50 | Skewness | Kurtosis | OPS | Classification |
 |---|---|---|---|---|---|---|---|
@@ -48,7 +44,7 @@ Where each metric is min-max normalized across the nine evaluated models (range:
 
 ★ OPS > 0.6: stability intervention required prior to industrial deployment.
 
-> **Note:** Outlier Ratio (OR) is reported as a supplementary diagnostic in paper Table A2 but is excluded from OPS computation due to high collinearity with CV (Pearson r = 0.87). OPS weight sensitivity analysis (±0.10 perturbation per metric) confirmed that top-3 and bottom-3 model rankings are invariant to reasonable weighting assumptions (see paper Appendix C, Table C1).
+> **Note:** Outlier Ratio (OR) is reported as a supplementary diagnostic in paper Table A2 but is excluded from OPS computation due to high collinearity with CV (Pearson r = 0.87). OPS weight sensitivity analysis (±0.10 perturbation per metric) confirmed that top-3 and bottom-3 model rankings are invariant to reasonable weighting assumptions (paper Appendix C, Table C1).
 
 ---
 
@@ -66,13 +62,13 @@ Where each metric is min-max normalized across the nine evaluated models (range:
 | Qwen2.5-1.5B-Instruct | 1.5 | 32,768 | Decoder-only Transformer | Apache 2.0 |
 | Qwen2.5-3B-Instruct | 3.0 | 32,768 | Decoder-only Transformer | Apache 2.0 |
 
-Model parameter counts range from 0.5B to 3.2B, targeting the computational range most applicable to current edge applications where balancing capability and resource constraints is a key deployment challenge.
+Model parameter counts span 0.5B to 3.2B, targeting the computational range most applicable to current industrial edge deployments where balancing model capability against resource constraints is a primary design decision.
 
 ---
 
 ## Evaluation Tasks and Experimental Design
 
-Three NLP tasks were selected to span a computational complexity hierarchy directly relevant to timing budget provisioning in real-time embedded systems — from bounded single-pass classification (NLU) to extractive generation (QA) to variable-length auto-regressive decoding (Summarization):
+Three NLP tasks were selected to span a computational complexity hierarchy directly relevant to timing budget provisioning in embedded real-time systems—from bounded single-pass classification (NLU) to extractive generation (QA) to variable-length auto-regressive decoding (Summarization):
 
 | Task | Dataset | Metric | Description |
 |---|---|---|---|
@@ -80,11 +76,11 @@ Three NLP tasks were selected to span a computational complexity hierarchy direc
 | QA | SQuAD v2 (validation) | ROUGE-1 | Extractive question answering |
 | Summarization | CNN/DailyMail 3.0.0 (validation) | ROUGE-1 | Abstractive summarization |
 
-This task hierarchy enables systematic characterization of how task-induced execution-time heterogeneity interacts with NPU hardware behavior — analogous to mixed-criticality workload characterization in multi-task real-time systems.
+This task hierarchy enables systematic characterization of how task-induced execution-time heterogeneity interacts with NPU hardware behavior—analogous to mixed-criticality workload characterization in multi-task real-time systems.
 
-**Experimental design:** 100 samples per task × 3 random seeds = **300 independent trials per model–task combination** (N = 8,100 total observations across 9 models). Each prompt was executed in a separate, reset inference session to prevent cache state carry-over between trials. Trial order was randomized to prevent systematic bias from thermal throttling or sequential cache state effects.
+**Experimental design:** 100 samples per task × 3 random seeds = **300 independent trials per model–task combination** (N = 8,100 total observations across 9 models). Each prompt was executed in a separate, reset inference session to prevent KV cache carry-over between trials. Trial order was randomized to mitigate systematic bias from thermal throttling or sequential cache state effects.
 
-Inference was standardized with `max_new_tokens=50`, `batch_size=1`, `temperature=0.7`, and `random_seed=42` to reflect single-user real-time edge deployment conditions. All models were compiled using `RBLNAutoModelForCausalLM` from `optimum-rebellions`, following manufacturer-recommended optimization practices.
+Inference was standardized with `max_new_tokens=50`, `batch_size=1`, `temperature=0.7`, and `random_seed=42` to reflect single-user real-time edge deployment conditions. All models were compiled using `RBLNAutoModelForCausalLM` from `optimum-rebellions` following manufacturer-recommended optimization practices.
 
 ---
 
@@ -110,7 +106,7 @@ Inference was standardized with `max_new_tokens=50`, `batch_size=1`, `temperatur
 |---|---|
 | `model_name` | Model identifier |
 | `task` | NLU / QA / Summarization |
-| `trial_id` | Trial index (1–300 per model-task combination) |
+| `trial_id` | Trial index (1–300 per model–task combination) |
 | `seed` | Random seed used (42, 43, 44) |
 | `latency_ms` | End-to-end wall-clock latency (ms) |
 | `tokens_generated` | Number of output tokens |
@@ -161,8 +157,8 @@ python src/1_compile_models.py
 
 - The `models_config` dictionary in the script defines the nine models evaluated in the paper. Add or remove entries to adjust the model set.
 - Compiled binaries are saved to `compiled_models/<model_name>/` by default.
-- The script includes automatic Out-Of-Memory (OOM) handling: if compilation fails, `max_seq_len` is incrementally reduced and compilation is retried. This mirrors the adaptive compilation strategy used in the paper.
-- All models are compiled using `RBLNAutoModelForCausalLM` from `optimum-rebellions`, following manufacturer-recommended optimization practices.
+- The script includes automatic Out-Of-Memory (OOM) handling: if compilation fails, `max_seq_len` is incrementally reduced and compilation is retried, mirroring the adaptive compilation strategy used in the paper.
+- All models are compiled using `RBLNAutoModelForCausalLM` from `optimum-rebellions` following manufacturer-recommended optimization practices.
 
 ### Step 2: Run Inference Benchmarks
 
@@ -178,13 +174,13 @@ python src/2_benchmark_inference.py \
 ```
 
 Key design choices reflected in the script:
-- `batch_size=1` to simulate single-user real-time inference, reflecting the dominant edge deployment scenario where a dedicated device serves a single inference stream.
-- Each trial runs in a separate, reset inference session to prevent cache state carry-over and ensure observation independence.
-- Trial order is randomized across model-task combinations to prevent systematic bias from thermal throttling.
+- `batch_size=1` simulates single-user real-time inference, reflecting the dominant edge deployment scenario where a dedicated device serves a single inference stream.
+- Each trial runs in a separate, reset inference session to ensure observation independence and prevent KV cache state carry-over.
+- Trial order is randomized across model–task combinations to prevent systematic bias from thermal throttling.
 - Per-trial metrics logged: `latency_ms`, `tokens_generated`, `throughput_tps`, `peak_npu_mem_gb`, `estimated_power_w`.
 - Results are automatically appended to `Data_시계열.xlsx` (one row per trial).
 
-> **Replication note:** The paper reports N = 300 independent trials per model–task combination (100 samples × 3 seeds). Running all 9 models × 3 tasks × 300 trials = 8,100 total observations is computationally intensive. Reduce `--n_trials` for exploratory runs; use the full configuration to reproduce paper results exactly.
+> **Replication note:** The paper reports N = 300 independent trials per model–task combination (100 samples × 3 seeds). Running all 9 models × 3 tasks × 300 trials = 8,100 total observations is computationally intensive on NPU hardware. Reduce `--n_trials` for exploratory runs; use the full configuration to reproduce paper results exactly.
 
 ### Step 3: Analyze Results and Reproduce Paper Figures
 
@@ -200,11 +196,11 @@ The script sequentially executes:
 |---|---|---|
 | Execution-time distribution overview | H5 | Figure 1: Comparative Latency Distribution (Box + Violin) |
 | OPS computation (Eq. 11) | H5 | Figure 2: Optimization Priority Score & Distributional Cost Map; Table A2 |
-| Two-way ANOVA (model size × task) | H1 | Figure 3: Task-Contingent Execution Time Scaling Interaction Plot |
+| Two-way ANOVA (model size × task) | H1 | Figure 3: Task-Contingent Execution-Time Scaling Interaction Plot |
 | Natural cubic spline regression + LOOCV | H2 | Figure 4: Spline Fit & Residual Diagnostics |
 | Levene's test + post-hoc comparisons | H3 | Figure 5: Execution-Time Variance Heterogeneity Across Tasks; Table A3 |
 | Random Forest permutation importance + Pareto analysis | H4 | Figure 6: Throughput Predictors & Pareto Frontier |
-| Integrated deployment decision framework | — | Figure 7: Reliability-Centric Benchmarking Pipeline & Deployment Guidance |
+| Integrated deployment decision framework | — | Figure 7: Timing-Predictability-Oriented Benchmarking Pipeline & Deployment Guidance |
 
 All statistical tests use α = 0.05 with Benjamini-Hochberg (BH) FDR correction applied across the full hypothesis family. Effect sizes are reported alongside p-values throughout.
 
@@ -232,7 +228,7 @@ df["TailRatio_norm"] = minmax(df["P95_P50_Ratio"])
 df["Skew_norm"]      = minmax(df["Skewness"].abs())
 df["Kurt_norm"]      = minmax(df["Kurtosis"])
 
-# Compute OPS with weights: CV=0.35, TailRatio=0.35, Skew=0.15, Kurt=0.15
+# Compute OPS: CV=0.35, TailRatio=0.35, Skew=0.15, Kurt=0.15
 df["OPS"] = (
     0.35 * df["CV_norm"] +
     0.35 * df["TailRatio_norm"] +
@@ -243,34 +239,34 @@ df["OPS"] = (
 print(df[["model_name", "OPS"]].sort_values("OPS"))
 ```
 
-> **Note:** Outlier Ratio (OR) is reported as a supplementary diagnostic in paper Table A2 but is excluded from OPS computation due to high collinearity with CV (Pearson r = 0.87), which would introduce redundancy in the weighting scheme. Sensitivity analysis confirmed that OPS rankings are robust to ±0.10 perturbations in each weight, with no rank-order changes among the top-3 and bottom-3 models (Appendix C, Table C1).
+> **Note:** Outlier Ratio (OR) is reported as a supplementary diagnostic in paper Table A2 but is excluded from OPS computation due to high collinearity with CV (Pearson r = 0.87), which would introduce redundancy in the weighting scheme. Sensitivity analysis confirmed that OPS rankings are robust to ±0.10 perturbations in each weight, with no rank-order changes among the top-3 and bottom-3 models (paper Appendix C, Table C1).
 
 ---
 
 ## Hardware and Software Configuration
 
-This study focuses exclusively on the ATOM™ NPU, reflecting the **post-procurement model selection** context: once an NPU device is deployed in a manufacturing environment, practitioners must select models within that fixed hardware budget. The ATOM™ NPU is further motivated by energy efficiency, maximizing throughput within a 15W thermal envelope — in contrast to the RTX 4090 (350W TDP) or Intel Core i9 (125W TDP), which are impractical for most edge deployment scenarios.
+This study focuses exclusively on the ATOM™ NPU, reflecting the **post-procurement model selection** context: once an NPU device is deployed in an industrial environment, practitioners must select models within the fixed hardware budget. The ATOM™ NPU is motivated by energy efficiency, maximizing throughput within a 15W thermal envelope—in contrast to the RTX 4090 (350W TDP) or Intel Core i9 (125W TDP), which are impractical for thermally constrained edge deployments.
 
 | Category | Component | Specification | Rationale |
 |---|---|---|---|
-| Accelerator | Rebellions ATOM™ NPU | Primary evaluation platform (~15W TDP) | Specialized architecture representative of industrial edge AI constraints; enables assessment of hardware-specific execution-time variability |
+| Accelerator | Rebellions ATOM™ NPU | Primary platform (~15W TDP) | Specialized architecture representative of industrial edge AI constraints; enables assessment of hardware-specific execution-time variability |
 | CPU | 8-core CPU | System integration | Balanced configuration preventing CPU bottlenecks from masking NPU timing characteristics |
-| Memory | 16GB LPDDR5 RAM | System RAM | Sufficient capacity to evaluate memory pressure effects on execution-time stability |
-| OS | Ubuntu 22.04 LTS | Stable, reproducible environment | Controlled software environment for timing reproducibility |
-| Frameworks | PyTorch 2.x, RBLN SDK, optimum-rebellions | Manufacturer-recommended stack | Industry-standard stack ensuring practical relevance of deployment findings |
+| Memory | 16GB LPDDR5 RAM | System RAM | Sufficient capacity to evaluate memory pressure effects on inference stability |
+| OS | Ubuntu 22.04 LTS | — | Stable, reproducible environment for timing measurement |
+| Frameworks | PyTorch 2.x, RBLN SDK, optimum-rebellions | — | Manufacturer-recommended stack ensuring practical relevance of deployment findings |
 
 GPU (NVIDIA RTX 4090, 350W TDP) and CPU (Intel Core i9, 125W TDP) platforms were available during experimental setup but are excluded from primary evaluation. Cross-platform reference efficiency figures are provided in paper Appendix B (Table B1) for deployment context only and should not be interpreted as a systematic cross-platform benchmark.
 
-The timing characterization methodology, statistical framework, and OPS scoring approach are **platform-agnostic** and transferable to other NPU architectures (e.g., Qualcomm AI 100, Hailo-8, Apple Neural Engine), with platform-specific recalibration of numerical thresholds required before operational use.
+The timing characterization methodology, statistical framework, and OPS scoring approach are **platform-agnostic** and transferable to other NPU architectures (e.g., Qualcomm AI 100, Hailo-8, Apple Neural Engine) with platform-specific recalibration of numerical thresholds.
 
 ---
 
 ## Scope and Limitations
 
-- **Platform specificity:** Absolute latency, throughput, and memory utilization values are specific to the ATOM™ NPU. Numerical results will differ on other NPU architectures due to differences in memory hierarchy, compiler optimization, and parallelism models. OPS threshold values should be recalibrated for each target platform before operational use.
-- **Model scope:** Evaluated sLLMs span 0.5B–3.2B parameters on text-based NLP tasks. Vision, audio, and multimodal architectures may exhibit different execution-time stability profiles.
-- **H2 sample size:** The spline regression analysis is conducted on n = 9 aggregate data points (one per model). In-sample R² (0.891) likely overestimates true explanatory power; LOOCV R² (0.743) is the conservative estimate. Results should be interpreted as directional evidence of non-linearity; inflection-point estimates require validation on larger model samples before operational use.
-- **H4 causal claims:** Random Forest analysis identifies predictive associations between system features and throughput, not causal mechanisms. Controlled ablation experiments (systematically varying memory allocation while holding other parameters constant) would be required to validate causal claims.
+- **Platform specificity:** Absolute latency, throughput, and memory utilization values are specific to the ATOM™ NPU. Numerical results will differ on other NPU architectures due to differences in memory hierarchy design, compiler optimization, and parallelism models. OPS threshold values should be recalibrated for each target platform before operational use.
+- **Model scope:** Evaluated sLLMs span 0.5B–3.2B parameters on text-based NLP tasks only. Vision, audio, and multimodal architectures may exhibit different execution-time stability profiles under NPU execution.
+- **H2 sample size:** The spline regression analysis is conducted on n = 9 aggregate data points (one per model). In-sample R² (0.891) likely overestimates true explanatory power due to overfitting; LOOCV R² (0.743) is the conservative estimate. Results should be interpreted as directional evidence of non-linearity; inflection-point estimates require validation on larger model samples before operational use.
+- **H4 causal claims:** Random Forest analysis identifies predictive associations between hardware features and throughput, not causal mechanisms. Controlled ablation experiments—systematically varying memory allocation while holding other parameters constant—would be required to validate causal interpretations.
 
 ---
 
