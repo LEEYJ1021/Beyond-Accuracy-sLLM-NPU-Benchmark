@@ -1,0 +1,21 @@
+﻿항목,DeepSeek-R1-Distill-Qwen-1.5B,EXAONE-3.5-2.4B-Instruct,gemma-2b-it,Llama-3.2-3B-Instruct,Midm-2.0-Mini-Instruct,opt-2.7b,Qwen2.5-0.5B-Instruct,Qwen2.5-1.5B-Instruct,Qwen2.5-3B-Instruct
+Context Length,"32,768","32,768","8,192","128,000","4,096","2,048","32,768","32,768","128,000"
+Max Generation Length,"32,768","32,768","8,192","128,000","4,096","2,048","8,192","8,192","8,192"
+Benchmark Category,4,"3 (일반 언어, 한국어, 논리)",3,"4 (영어, 수학, 코드, 다국어)",3,3 (NLP / Dialogue / Bias-Safety),3 (언어 / 코드 / 수학),3 (언어 / 코드 / 수학),3
+LiveCodeBench pass@1,16.9,33.0 (LiveBench 점수),22,32.3 (HumanEval 기준),60.9,미지원,HumanEval 85+,HumanEval 85+,85
+Language Coverage,"영어, 중국어","English, Korean",English,"English, German, French, Italian, Portuguese, Hindi, Spanish, Thai (+ broader multilingual)","Korean, English",English (mostly),"29 languages (Chinese, English, French, Spanish, Portuguese, German, Italian, Russian, Japanese, Korean, Vietnamese, Thai, Arabic, etc.)","29 languages (Chinese, English, French, Spanish, Portuguese, German, Italian, Russian, Japanese, Korean, Vietnamese, Thai, Arabic, etc.)","29 languages (Chinese, English, French, etc.)"
+Base Model,Qwen2.5-Math-1.5B,EXAONE 3,gemma-2b,Llama 3.1 8B / 70B (distillation source logits used),Mi:dm 2.0 Base,OPT-125M to OPT-30B 계열,Qwen2.5‑Base‑0.5B,Qwen2.5‑Base‑1.5B,Qwen2.5-Base-3B
+Model Family,R1-Distill,EXAONE 3.5,Gemma,Llama 3.2,Mi:dm 2.0,OPT,Qwen2.5,Qwen2.5,Qwen2.5
+License,MIT + Apache 2.0,EXAONE AI Model License Agreement 1.1 – NC,Gemma (Google License),Llama 3.2 Community License,MIT,other (Meta non-commercial research),Apache‑2.0,Apache‑2.0,Qwen Research License
+Training Type,RL + SFT 혼합,Instruction-tuned (SFT 기반),SFT,SFT + RLHF,SFT (Instruction-tuning 기반),SFT (Self-supervised pretraining via CLM),SFT (Instruction-tuning after pretraining),SFT (Instruction‑tuning after pretraining),SFT
+Evaluation Mode,Pass@1 & cons@64,"MT-Bench, LiveBench, Arena-Hard, AlpacaEval, IFEval, KoMT-Bench, LogicKor",pass@1 등 개별 벤치마크,"internal evaluations (macro_avg/acc, EM, F1 등)",pass@1 / MTBench / KMMLU 등,NLP task accuracy (zero-/few-shot),"General benchmarks, MMLU / HumanEval / MATH",General benchmarks (MMLU / HumanEval / MATH),General benchmarks (MMLU / HumanEval / MATH)
+API Endpoint,platform.deepseek.com,미지원,https://huggingface.co/google/gemma-2b-it,미지원,OpenAI-compatible (vLLM serve 지원),미지원,Model Studio (OpenAI‑compatible),Model Studio (OpenAI‑compatible),Model Studio / vLLM (OpenAI-compatible)
+Chat Platform,chat.deepseek.com,미지원,Hugging Face / Vertex AI,미지원,Friendli.AI / Hugging Face,미지원,Qwen Chat / Hugging Face Spaces,Qwen Chat / Hugging Face Spaces,Qwen Chat / Model Studio / Hugging Face
+MATH-500 pass@1,83.9,미지원,11.8,49.2 (MATH CoT 기준),26.6,미지원,80+,80+,80
+Reasoning Directive,포함 권장,미지원,"""Please reason step by step.""",미지원,"""Please reason step by step.""",미지원,"""Please reason step by step, and put your final answer within \boxed{}."" (예시, 권장)","""Please reason step by step, and put your final answer within \boxed{}."" (예시 문구)","""Please reason step by step, and put your final answer within \boxed{}."" (예시 문구)"
+SFT Stages,2,1,1,1,1,1,1,1,1
+Architecture,Transformer (Dense),"Transformer (30 layers, GQA 32 Q / 8 KV heads)",Decoder-only Transformer,"Transformer (Grouped-Query Attention, auto-regressive)",Decoder-only Transformer (LLaMA 계열),Decoder-only Transformer,"Decoder‑only Transformer (RoPE, SwiGLU, RMSNorm)","Decoder‑only Transformer (RoPE, SwiGLU, RMSNorm)","Transformer (decoder-only, RoPE, SwiGLU, RMSNorm, QKV bias, tied embeddings)"
+Model Run Framework,"vLLM, SGLang","Transformers, TensorRT-LLM, vLLM, SGLang, llama.cpp, Ollama",JAX / Pathways / PyTorch Inference,"PyTorch, Transformers, ExecuTorch",PyTorch / Transformers / vLLM,PyTorch / metaseq,PyTorch / Transformers / vLLM,PyTorch / Transformers / vLLM,"Transformers, vLLM, Ollama, LM Studio"
+Language Mixing Issue,True (해결됨 in R1),FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+Think Tag Enforcement,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,False (인스트럭트 모드),False (인스트럭트 모드),FALSE
+Trust Remote Code,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE
